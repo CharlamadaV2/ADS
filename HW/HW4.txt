@@ -1,0 +1,67 @@
+1.) Construct a record whose elements are two ads_complex types, one for z
+and one for c.
+
+type signal_elements is record
+    c : ads_complex;
+    z : ads_complex;
+end record signal_elements;
+
+2.) Declare an entity that has a reset signal and clock signal of type std_logic and
+uses the previously constructed record as type for a stage_input signal and a stage_output
+signal.
+
+entity pipeline_stage is 
+    port(
+        reset : std_logic;
+        clock_signal : std_logic;
+
+        stage_input : signal_elements;
+        stage_output : signal_elements
+
+    );
+
+end pipeline_stage;
+
+3.) : Extend the entity to include a generic parameter for an arbitrary threshold of
+type ads_sfixed, as well as a stage number of type natural.
+
+entity pipeline_stage is 
+    generic(
+        threshold : ads_sfixed;
+        stage_number : natural
+    );
+    port(
+        reset : std_logic;
+        clock_signal : std_logic;
+
+        stage_input : signal_elements;
+        stage_output : signal_elements
+
+    );
+
+end pipeline_stage;
+
+4.) Add an entry of type natural called stage_data and an entry of type boolean called stage_overflow to the record type from Question 1.
+
+type signal_elements is record
+    c : ads_complex;
+    z : ads_complex;
+
+    stage_data : natural;
+    stage_overflow : boolean
+end record signal_elements;
+
+
+
+6.) Add and drive a stage_valid signal to the pipeline stage by
+modifying the record in Question 1 and the implementation of the architecture in Question 5.
+
+I am unsure if I did this correct
+
+7.) Subdivide your pipeline stage implementation into three parts.
+The first part should compute all multiplications and save all results to a series of registers.
+The second part should compute all additions and save all results to a series of registers.
+The last stage should perform the comparison and drive all outputs. Do not save these
+results to flip-flops, this will be done externally. Ensure that all data remains synchronized:
+two clock cycles are needed to fully compute everything on the pipeline stage.
+

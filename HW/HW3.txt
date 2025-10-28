@@ -1,0 +1,50 @@
+1.) How many colors can the board output through VGA interface?
+
+3 colors RGB
+
+2.) If we aim to drive our VGA output at a 640 × 480 resolution at a 60 Hz refresh
+rate, what should the pixel clock rate be?
+
+The pixel clock rate should be 25 MHz
+
+
+4.) For a 640 × 480 resolution at a 60 Hz rate, provide the timings for the following
+measures in the given               units
+Horizontal front porch           16 pixels
+Horizontal sync pulse width      96   pixels
+Horizontal back porch            48   pixels
+Vertical front porch             10   lines
+Vertical sync pulse width        2   lines
+Vertical back porch              33   lines
+What is the polarity of the sync pulses on a 640 × 480 VGA resolution?
+
+The polarity is Negative
+
+5.) Given the timings in Question 4 and the clock rate in Question 2, what percentage
+of the frame is spent in the blanking periods?
+The timing 
+
+16 + 96 + 48 = 160
+
+160 / 640 * 100 = 25%
+
+10 + 2 + 33 = 45
+45 / 480 * 100 = 9.37%
+
+6.)  If we allow a 4 bit framebuffer, that is a framebuffer where every
+pixel only has a 4 bit color value, on a 640×480 resolution. How much memory do we need
+to hold this data? Can we do double buffering at this resolution using only the on-chip
+memory of the MAX 10 FPGA on the DE10-Lite board?
+
+640 * 480 * 4 = 1,228,800 bits => 150 kB
+
+Double buffering = 150 * 2 = 300 kB
+No we can not, the manual says max 200kB
+
+7.)  In the next two projects, we will work using a VGA output.
+The second project will require the use of a 1920×1080 resolution driven at 60 Hz. Provide
+the timing data for this resolution. What is the sync polarity?
+
+The polarity is positive
+
+
