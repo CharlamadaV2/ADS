@@ -1,0 +1,50 @@
+/*
+Notes:  The generated hardware must contain the means to select the hardware being
+generated. Perform this action with SW9 on the board.
+
+When SW9 is High: Fatou and Julia sets
+When SW9 is Low: Mandelbot set
+
+When switching between fractals, you should also switch
+between windowing areas, as to center the fractals in the screen.
+
+Description:
+1. We need to map points on the screen to points on the complex plane.
+The VGA gives us a y-coorrdinate in lines, and the x-coordiantes as pixels in line
+
+2. We need to translate the x and y values into a viewing range in the complex plane
+C_w is the viewing range
+    We denote this operations as M: (p, l) -> C_w
+    For the resolution 480 x 640
+    R{c} := 3.2 x p/640 
+    I{c} := 2.2 x (240-l) / 480
+    for the real and imaginary parts of the number, respectively
+
+3. Pipeline Method:
+Every clock cycle, pipeline output should yield the number of iterations for a particular point in the set
+Pros: Higher resolutons images, no intermedia memory, can make use of high iteration count.
+
+- Every stage of the pipeline performs the equivalent of one iteration.
+- Every stage propogates the results of the square and accumulate operation to the next stage.
+- Each stage performs comparison of the magnitude of current z to threshold.
+- Pipeline propogates the result of the comparison and the pipeline stage number.
+- If z > threshold: any subsequent stages of the pipeline propagate the stage number that has been sent to it.
+Output of the pipeline will contain # of iterations for the seed c to escape.
+- Use these numbers to index the color table.
+- We can feed new seed c to the start of pipeline every clock cycle.
+
+4. Parallel Vector Machine Method:
+-  Implement multiple of computational units which perform complex multiplication and addition on a closed loop.
+- Each computational unit uses an accumulator architecture
+- We use multiple computational units and a control unit to schedule work to these computational units.
+- Control unit also reads the output of the computational units to plot on the screen.
+- When data is read from a computational unit, we seed it with a new point and let it iterate. 
+Right after, move the next computational engine and perform the same process.
+
+- when the control unit returns to a computational engine, its result must be ready
+- if a computational unit needs at most k iterations
+to determine if a point is part of the Mandelbrot or Julia/Fatou sets, then there must be at
+least k computational units for the control unit to read and set up before returning to the
+initial one.
+
+*/
