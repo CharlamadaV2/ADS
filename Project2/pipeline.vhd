@@ -3,35 +3,50 @@ use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 use work.pipeline_package.all;
+library ads;
+use ads.ads_fixed.all;
 
+use work.pipeline_stage.all;
+use work.fractal_selector.all;
 
-architecture rtl of pipeline_stage is
-    -- add any signals you may need
-    signal stage_valid : boolean; 
-    begin
-    -- perform computations and complete assignments
-    -- ...
-    stage_input.stage_overflow
-    stage: process(clock, reset) is
-    begin
-        if reset = '0' then
-        -- reset pipeline stage
-        elsif rising_edge(clock) then
-            -- I don't remember what we did to optimize this portion of the code
-            if stage.stage_input.stage_overflow then
-                stage_output.stage_data <= stage_input.stage_data;
-            else
-                stage_output.stage_data <= stage_number;
-                -- Is stage_number defined??
-            end if;
-            --same with this
-            stage_output.c <= stage_input.c;
-            stage_output.z <= stage_input.z * stage_input.z + stage_input.c;
-            if stage_input.stage_overflow then
-                stage_output.stage_overflow <= stage_input.stage_overflow;
-                else
-                stage_output.stage_overflow <= stage_input.stage_overflow > threshold;
-            end if;
-        end if;
-    end process stage;
+entity pipeline is
+    generic(
+        --At least 16 stages for pipeline
+        max_stage : positive := 16
+
+    );
+
+end pipeline;
+
+architecture rtl of pipeline is
+    type stage_data_array_type is array(0 to max_stage) of signal_elements; 
+    signal stage_data_array: signal_data_array_type;
+    
+begin
+    --Connected output from fractal selector to initial pipeline stage
+    stage_data_array(0).z <= z_out;
+    stage_data_array(0).c <= c_out;
+
+    g_pipeline_stage: for stage_number in 0 to max_stage - 1 generate 
+        --pipeline_stage(stage_number + 1) <= pipeline_stage(stage_number)
+        stage: entity work.pipeline_stage
+            generic map (
+                threshold => to_ads_sfixed(4),
+                stage_number => stage_number
+            )
+            port map (
+                reset => reset,
+                clock => clock,
+
+                -- Figure out how to not have this on initial stage
+                stage_input => stage_data_array(stage_number),
+                stage_output => stage_data_array(stage_number + 1)
+            );
+
+    end generate g_pipeline_stage;
+
+    -- Drive the output of the pipeline to color_data
+    pipieline_output <= pipeline_stage(max_stage);
+    
 end architecture rtl;
+
