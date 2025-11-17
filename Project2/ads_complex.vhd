@@ -64,5 +64,45 @@ package body ads_complex_pkg is
 	end function "+";
 
 	-- implement all other functions here
+	function "-" (
+		l, r: in ads_complex
+	) return ads_complex
+	is
+		variable ret: ads_complex;
+	begin
+		ret.re := l.re - r.re;
+		ret.im := l.im - r.im;
+		return ret;
+	end function "-";
+
+	function "*" (
+			l, r: in ads_complex
+		) return ads_complex
+	is
+		variable ret: ads_complex;
+	begin
+		ret.re := (l.re*r.re) - (l.im*r.im);
+		ret. im := (l.re*r.im) + (l.im * r.re);
+	end function "*";
+
+	function conj (
+			arg: in ads_complex
+		) return ads_complex
+	is	
+		variable ret: ads_complex;
+	begin
+		ret.re := arg.re;
+		ret.im := complex_zero.im - arg.im;
+		return ret;
+	end function conj;
+	
+	function abs2 (
+			arg: in ads_complex
+		) return ads_sfixed
+	is
+		variable ret: ads_fixed;
+	begin
+		ret := (arg.re*arg.re) + (arg.im*arg.im);
+	end function abs2;
 
 end package body ads_complex_pkg;

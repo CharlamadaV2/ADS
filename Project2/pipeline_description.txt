@@ -33,7 +33,7 @@ Output of the pipeline will contain # of iterations for the seed c to escape.
 - Use these numbers to index the color table.
 - We can feed new seed c to the start of pipeline every clock cycle.
 
-4. Parallel Vector Machine Method:
+4. Parallel Vector Machine Method: (optional)
 -  Implement multiple of computational units which perform complex multiplication and addition on a closed loop.
 - Each computational unit uses an accumulator architecture
 - We use multiple computational units and a control unit to schedule work to these computational units.
