@@ -1,0 +1,80 @@
+1.) Create an unconstrained array type which uses
+the newly created record as the base type.
+
+type seven_segment_config is record
+    a : std_logic;
+    b : std_logic;
+    c : std_logic;
+    d : std_logic;
+    e : std_logic;
+    f : std_logic;
+    g : std_logic;
+end record seven_segment_config;
+
+type seven_segment_ucarray is array (natural range <>) of seven_segment_config;
+
+2.) Construct an enumerated type called lamp_configuration which defines the names
+common_anode and common_cathode. Define a constant of this enumerated type called default_lamp_config
+and set it to the lamp configuration of your board.
+
+type lamp_configuration is (common_anode, common_cathode);
+
+constant default_lamp_config : lamp_configuration := common_anode;  
+
+3.) Utilize the array from question 1 define a constant named seven_segment_table. 
+Each seven_segment_config entry must describe the lamp configuration of a hexadecimal alphabet.
+
+constant seven_segment_table : seven_segment_ucarray(0 to 15); 
+
+4.) Declare a subtype of natural called hex_digit which is constrained to the range
+of the constant created in the previous question. Use this subtype to construct a function
+with the following prototype.
+
+The function should use the seven_segment_table declared in Question 3 and return a
+seven_segment_config entry which activates the lamps for the given lamp_mode configuration.
+
+subtype hex_digit is natural range 0 to 15;
+
+function get_hex_digit (
+    digit : in hex_digit;
+    lamp_mode : in lamp_configuration := default_lamp_config
+) return seven_segment_config is
+    variable result : seven_segment_config;
+begin
+    result := seven_segment_table(digit);  
+    
+    if lamp_mode = common_anode then
+        result := not result;
+    end if;
+    
+    return result;
+end function get_hex_digit;
+
+
+5.) Construct a function with the prototype which 
+returns a seven_segment_config for the given lamp_mode so that all lamps are off.
+
+
+function lamps_off (
+    lamp_mode : in lamp_configuration := default_lamp_config
+) return seven_segment_config is
+    variable off_pattern : seven_segment_config;
+begin
+    case lamp_mode is
+        when common_cathode =>
+            off_pattern := "0000000";  -- All high (off for active-high)
+        when common_anode =>
+            off_pattern := "1111111";  -- All low (off for active-low)
+    end case;
+    
+    return off_pattern;
+end function lamps_off;
+
+6.) Construct a list of lists in Tcl so that each internal list contains the FPGA pins for which the lamps on the seven segment displays are connected.
+
+7.) Write a Tcl procedure called set_pins which takes in the number
+of hex digits we wish to use as well as an optional name for the signal which connects to
+the lamps. The procedure will issue the proper set_location_assignment directives so that
+Quartus automatically performs pin placement. The procedure should use the previously
+defined sseg_lamps variable. You may use the following snippet of code to get started.
+
